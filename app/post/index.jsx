@@ -76,7 +76,12 @@ export default function Index() {
   } catch (error) {
     console.error('Error uploading image:', error);
   }
+   
 };
+const handlePictureTaken = (picture) => {
+    setImage(picture.uri);  // Get the image URI from the camera component
+    setIsModalVisible(false);  // Close the modal after capturing
+  };
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
@@ -133,7 +138,10 @@ export default function Index() {
               <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
                 <MaterialCommunityIcons name="close-thick" size={30} color="#E1E3E4" />
               </TouchableOpacity>
-              <Cameras />
+              <Cameras
+                 onPictureSaved={handlePictureTaken}  // Pass the callback to capture the image
+                 onClose={() => setModalVisible(false)}  // Optionally close modal
+              />
             </View>
           </Modal>
 
