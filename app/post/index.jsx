@@ -1,5 +1,5 @@
 import { ScrollView, Modal, View, Text, StatusBar, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -9,13 +9,14 @@ import Cameras from './../../components/camera';
 import * as FileSystem from 'expo-file-system';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from './../../config';
-
+import {Statecontext} from './../../context/StateContext'
 
 export default function Index() {
  const [image, setImage] = useState(null); // Stores the image URI
   const [modalVisible, setModalVisible] = useState(false); // For managing modal visibility
   const [error, setError] = useState(null); // To track any errors
-   const [downloadURL, setDownloadURL] = useState(null);
+  const [downloadURL, setDownloadURL] = useState(null);
+     const [camImage, setCamImage] =useContext(Statecontext)
   const pickImage = async () => {
     try {
       let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -78,10 +79,17 @@ export default function Index() {
   }
    
 };
-const handlePictureTaken = (picture) => {
-    setImage(picture.uri);  // Get the image URI from the camera component
-    setIsModalVisible(false);  // Close the modal after capturing
-  };
+//   const handlePictureTaken = (picture) => {
+//     console.log("Picture received in parent:", picture);  // Check what the parent receives
+//     if (picture && picture.uri) {
+//         setImage(picture.uri);  // Get the image URI from the camera component
+//     } else {
+//         console.error('Received picture is invalid:', picture);
+//     }
+//     setIsModalVisible(false);  // Close the modal after capturing
+// };
+  // console.log(image)
+    console.log(`from the parent camera image :${camImage}`)
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
@@ -139,7 +147,7 @@ const handlePictureTaken = (picture) => {
                 <MaterialCommunityIcons name="close-thick" size={30} color="#E1E3E4" />
               </TouchableOpacity>
               <Cameras
-                 onPictureSaved={handlePictureTaken}  // Pass the callback to capture the image
+
                  onClose={() => setModalVisible(false)}  // Optionally close modal
               />
             </View>

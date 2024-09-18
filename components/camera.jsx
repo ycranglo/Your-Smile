@@ -1,13 +1,16 @@
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
-import { useState,useRef } from 'react';
+import { useState,useRef, useContext } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View,StatusBar } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
+import {Statecontext} from './../context/StateContext'
+
 
 export default function Cameras({ onPictureTaken, onClose }) {
   const [facing, setFacing] = useState(Camera.back); 
   const [permission, requestPermission] = useCameraPermissions();
-   const cameraRef = useRef(null);
+  const cameraRef = useRef(null);
+   const [camImage, setCamImage] =useContext(Statecontext)
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -32,20 +35,26 @@ export default function Cameras({ onPictureTaken, onClose }) {
   async function takePicture() {
     if (cameraRef.current) {
         try {
-      console.log("inside takePicture")
-      const photo = await cameraRef.current.takePictureAsync();
-      console.log(photo)
-        if (onPictureTaken) {
-          onPictureTaken(photo);  // Pass the photo object to the parent
+            console.log("inside takePicture");
+            const photo = await cameraRef.current.takePictureAsync();
+            // console.log("Photo taken:", photo);  // Add this line to check the photo object
+            console.log(photo.uri)
+           setCamImage(photo.uri)
+            console.log(`context camera image ${camImage}`)
+            if (onClose) {
+                onClose();  // Optionally close the modal after taking the picture
+            }
+        } catch (error) {
+            console.error('Error taking picture:', error);
         }
-        if (onClose) {
-          onClose();  // Optionally close the modal after taking the picture
-        }
-      } catch (error) {
-        console.error('Error taking picture:', error);
-      }
     }
-  }
+}
+
+// Render method for the camera component
+<TouchableOpacity style={{ alignItems: 'center' }} onPress={takePicture}>
+    <Entypo name="circle" size={75} color="#E1E3E4" />
+</TouchableOpacity>
+
 
    // Capture picture
         // if (onPictureTaken) {
