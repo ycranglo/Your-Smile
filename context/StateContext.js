@@ -6,6 +6,7 @@
  export const StateProvider = (props) => {
   //setting up the state
   const [camImage, setCamImage] = useState('')
+   const [doneUpload, setDoneUpload] = useState()
    
    return (
     <Statecontext.Provider value={[camImage, setCamImage]}>

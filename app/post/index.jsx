@@ -1,4 +1,4 @@
-import { ScrollView, Modal, View, Text, StatusBar, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native';
+import { ScrollView, Modal, View, Text, StatusBar, StyleSheet, TextInput, TouchableOpacity, Pressable,Alert  } from 'react-native';
 import React, { useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -9,14 +9,18 @@ import Cameras from './../../components/camera';
 import * as FileSystem from 'expo-file-system';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from './../../config';
-import {Statecontext} from './../../context/StateContext'
+import { Statecontext } from './../../context/StateContext'
+import { useRouter } from 'expo-router';
 
 export default function Index() {
- const [image, setImage] = useState(null); // Stores the image URI
   const [modalVisible, setModalVisible] = useState(false); // For managing modal visibility
   const [error, setError] = useState(null); // To track any errors
-  const [downloadURL, setDownloadURL] = useState(null);
-     const [camImage, setCamImage] =useContext(Statecontext)
+  const [DownloadURL, setDownloadURL] = useState(null);
+  const [camImage, setCamImage] = useContext(Statecontext)
+    const [doneUpload, setDoneUpload] = useContext(Statecontext)
+  const [caption, setCaption] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const router = useRouter();
   const pickImage = async () => {
     try {
       let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -24,11 +28,10 @@ export default function Index() {
         setError("Permission to access media library was denied.");
         return;
       }
-
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [1,1],
         quality: 1,
         base64: true, // Enable base64 encoding
       });
@@ -36,7 +39,7 @@ export default function Index() {
       // Log the result for debugging purposes
         console.log('ImagePicker result:', result.assets[0].uri);      
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        setImage(result.assets[0].uri); // Store image URI
+        setCamImage(result.assets[0].uri); // Store image URI
         setError(null); // Clear any previous errors
       } else {
         setError("Image selection was canceled or failed.");
@@ -46,74 +49,102 @@ export default function Index() {
       console.error(e);
     }
   };
- const upload = async () => {
-  if (!image) {
-    console.error("No image selected");
-    return;
-  }
 
-  try {
-    // Convert the image URI to a Blob for Firebase Storage
-    const response = await fetch(image);
+  
+  const uplaodPostTofireBase =async () => {
+    try {
+       if (!camImage) {
+    console.error("No image selected");
+         return;
+         setIsLoading(true); // Show loading screen
+       }
+      // Convert the image URI to a Blob for Firebase Storage
+    const response = await fetch(camImage);
     const blob = await response.blob();
 
     // Create a reference to the Firebase storage location
-    const storageRef = ref(storage, `images/${Date.now()}_${image.split('/').pop()}`);
+    const storageRef = ref(storage, `images/${Date.now()}_${camImage.split('/').pop()}`);
 
     // Upload the image blob to Firebase Storage
     const snapshot = await uploadBytes(storageRef, blob);
 
     // Get the download URL for the uploaded image
     const downloadURL = await getDownloadURL(snapshot.ref);
-     setDownloadURL(downloadURL);
     console.log('Upload successful, download URL:', downloadURL);
-
-    // You can now use the download URL in your application
-    // For example: setImageUrl(downloadURL);
-    setImage(null); // Store image URI
-    setDownloadURL(null)
-
-
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-   
+      // Send caption and image URL to Firebase Realtime Database via REST API
+      
+ const postData = {
+  caption: caption,
+  imgUri: downloadURL,
+  createdAt: new Date().toISOString(), // Timestamp
+  comments: {}, // Use an object to store comments, or use an array if you prefer
+  likes: 0, // Initialize likes to zero
 };
-//   const handlePictureTaken = (picture) => {
-//     console.log("Picture received in parent:", picture);  // Check what the parent receives
-//     if (picture && picture.uri) {
-//         setImage(picture.uri);  // Get the image URI from the camera component
-//     } else {
-//         console.error('Received picture is invalid:', picture);
-//     }
-//     setIsModalVisible(false);  // Close the modal after capturing
-// };
-  // console.log(image)
-    console.log(`from the parent camera image :${camImage}`)
+  
+    // Firebase Realtime Database URL with your project name
+  const firebaseUrl = `https://yoursmile-89b3b-default-rtdb.firebaseio.com/Feeds.json`;
+
+    // Sending POST request to Firebase Realtime Database
+    const postResponse = await fetch(firebaseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    });
+
+    if (postResponse.ok) {
+      Alert.alert("Success", "Post uploaded successfully!");
+
+    } else {
+      console.error('Error uploading post:', postResponse.statusText);
+      Alert.alert("Error", "Failed to upload the post.");
+    }
+  } catch (error) {
+    console.error("Error uploading post:", error);
+    Alert.alert("Error", "Failed to upload the post. Please try again.");
+  } finally {
+      setIsLoading(false); // Hide loading screen
+    }
+  }
+  
+  const uploadPost = async () => {
+    // await uploadImageToFirebase()
+    await uplaodPostTofireBase()
+    setCaption()
+    setCamImage()
+    router.push('/feeds')
+     setDoneUpload(true)
+  
+};
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
         <Text style={styles.headerText}>New post</Text>
         <View style={styles.imageContainer}>
            <View style={styles.imageContainer}>
-          {downloadURL ? (
+          {camImage ? (
             // Display the uploaded image from Firebase Storage
-            <Image
+              <View style={styles.imageCam}> 
+                 <Image
               style={styles.imagePost}
-              source={{ uri: downloadURL }}
+              source={{ uri: camImage }}
               contentFit="cover"
               transition={1000}
             />
+              </View>
           ) : (
-            <Text style={styles.placeholderText}>No image uploaded yet</Text>
-          )}
+            <Text style={styles.placeholderText}></Text>
+            )}
+             {isLoading && (
+        <Modal transparent={true} animationType="fade">
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+            <ActivityIndicator size="large" color="#ffffff" />
+            <Text style={{ color: '#ffffff', marginTop: 10 }}>Uploading...</Text>
+          </View>
+        </Modal>
+      )}
         </View>
-          <Image
-            style={styles.imagePost}
-            source={require('./../../assets/images/smilePost.png')}
-            contentFit="cover"
-            transition={1000}
-          />
         </View>
         <View style={styles.inputContainer}>
           <TextInput
@@ -121,6 +152,9 @@ export default function Index() {
             placeholderTextColor="#E1E3E4"
             placeholder="Write your caption here:"
             keyboardType="default"
+            value={caption} // Bind the state to the TextInput
+            onChangeText={(text) => setCaption(text)} // Update the state on text input
+            
           />
         </View>
 
@@ -128,7 +162,6 @@ export default function Index() {
           <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
             <MaterialCommunityIcons name="progress-upload" size={30} color="#E1E3E4" />
             <Text style={styles.uploadText}>Upload files</Text>
-            {image && <Image source={{ uri: image }} style={styles.image} />}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.uploadButton} onPress={() => setModalVisible(true)}>
@@ -153,7 +186,7 @@ export default function Index() {
             </View>
           </Modal>
 
-          <Pressable onPress={upload} style={styles.button}>
+          <Pressable onPress={uploadPost} style={styles.button}>
             <Text style={styles.text}>Save</Text>
           </Pressable>
         </View>
@@ -184,12 +217,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imagePost: {
-    width: 200,
-    height: 200,
+    aspectRatio: 1/1,
+    borderRadius:10
   },
   inputContainer: {
     paddingTop: StatusBar.currentHeight,
     paddingHorizontal: 40,
+
   },
   input: {
     height: 50,
@@ -210,8 +244,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imagePost: {
-    width: 200,
-    height: 200,
+    width:300,
+    height: 300,
   },
   placeholderText: {
     color: '#E1E3E4',

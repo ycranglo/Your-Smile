@@ -6,7 +6,7 @@ export default function Index() {
   return (
     <View
     >
-      {user? <Redirect href={'/post'}/>: <Redirect href={'/login'}/> }
+      {user? <Redirect href={'/feeds'}/>: <Redirect href={'/login'}/> }
     </View>
   );
 }

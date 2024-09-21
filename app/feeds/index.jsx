@@ -1,14 +1,21 @@
-import { View, Text,StyleSheet,TextInput, StatusBar, ScrollView,Pressable } from 'react-native';
+import { View, Text,StyleSheet,TextInput,ToastAndroid, StatusBar, ScrollView,Pressable } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { useContext } from 'react';
 import axios from 'axios';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import UserFeeds from '../../components/userFeeds';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Statecontext } from './../../context/StateContext'
 
 export default function index() {
    const router = useRouter();
   const [data, setData] = useState(null);
+    const [doneUpload, setDoneUpload] = useContext(Statecontext)
+
+     function showToast() {
+    ToastAndroid.show('Request sent successfully!', ToastAndroid.SHORT);
+  }
 
   // const getFeeds = async () => {
   //   try {
@@ -36,8 +43,11 @@ export default function index() {
 
   return (
     <View style={styles.container}>
+      {doneUpload ?  ToastAndroid.show('Request sent successfully!', ToastAndroid.SHORT): (
+            <Text style={styles.placeholderText}></Text>
+            )}
       <View style={styles.TitleContainer}>
-         <Text style={styles.Title}>YS</Text>
+         <Text style={styles.Title}>Your Smile</Text>
         <Pressable onPress={() => router.push('/profile')}>
           <MaterialCommunityIcons name="account-circle-outline" size={30} color="white" />
          </Pressable>
@@ -49,6 +59,7 @@ export default function index() {
         <Pressable onPress={() => router.push('/post')}  >
           <Ionicons name="add-circle-outline" size={45} color="#E1E3E4" />
         </Pressable>
+
       </View>
     </View>
   );

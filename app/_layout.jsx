@@ -4,7 +4,7 @@ import { StateProvider } from './../context/StateContext'; // Import your contex
 export default function RootLayout() {
   return (
     <StateProvider>
-      <Stack screenOptions={{ animation: "fade" }}>
+      <Stack screenOptions={{ animation: "ios",animationDuration:200 }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="feeds" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
