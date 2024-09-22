@@ -9,6 +9,7 @@ export default function RootLayout() {
         <Stack.Screen name="feeds" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
         <Stack.Screen name="post" options={{ headerShown: false }} />
+         <Stack.Screen name="login" options={{ headerShown: false }} />
       </Stack>
     </StateProvider>
   );

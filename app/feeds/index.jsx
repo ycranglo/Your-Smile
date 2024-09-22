@@ -13,9 +13,6 @@ export default function index() {
   const [data, setData] = useState(null);
     const [doneUpload, setDoneUpload] = useContext(Statecontext)
 
-     function showToast() {
-    ToastAndroid.show('Request sent successfully!', ToastAndroid.SHORT);
-  }
 
   // const getFeeds = async () => {
   //   try {
@@ -43,9 +40,6 @@ export default function index() {
 
   return (
     <View style={styles.container}>
-      {doneUpload ?  ToastAndroid.show('Request sent successfully!', ToastAndroid.SHORT): (
-            <Text style={styles.placeholderText}></Text>
-            )}
       <View style={styles.TitleContainer}>
          <Text style={styles.Title}>Your Smile</Text>
         <Pressable onPress={() => router.push('/profile')}>

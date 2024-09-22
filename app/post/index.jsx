@@ -1,4 +1,4 @@
-import { ScrollView, Modal, View, Text, StatusBar, StyleSheet, TextInput, TouchableOpacity, Pressable,Alert  } from 'react-native';
+import { ScrollView, Modal, View, Text, StatusBar, StyleSheet, TextInput,ToastAndroid, TouchableOpacity, Pressable,Alert  } from 'react-native';
 import React, { useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -54,7 +54,8 @@ export default function Index() {
   const uplaodPostTofireBase =async () => {
     try {
        if (!camImage) {
-    console.error("No image selected");
+         console.error("No image selected");
+         Alert.alert("please upload a image😡")
          return;
          setIsLoading(true); // Show loading screen
        }
@@ -94,15 +95,13 @@ export default function Index() {
     });
 
     if (postResponse.ok) {
-      Alert.alert("Success", "Post uploaded successfully!");
+       ToastAndroid.show('Uploaded Succesfully!', ToastAndroid.SHORT);
 
     } else {
       console.error('Error uploading post:', postResponse.statusText);
-      Alert.alert("Error", "Failed to upload the post.");
     }
   } catch (error) {
     console.error("Error uploading post:", error);
-    Alert.alert("Error", "Failed to upload the post. Please try again.");
   } finally {
       setIsLoading(false); // Hide loading screen
     }
@@ -114,8 +113,7 @@ export default function Index() {
     setCaption()
     setCamImage()
     router.push('/feeds')
-     setDoneUpload(true)
-  
+
 };
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>

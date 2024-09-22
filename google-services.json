@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "605428971951",
+    "firebase_url": "https://yoursmile-89b3b-default-rtdb.firebaseio.com",
+    "project_id": "yoursmile-89b3b",
+    "storage_bucket": "yoursmile-89b3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605428971951:android:6c46c698ffb3e465a2d75a",
+        "android_client_info": {
+          "package_name": "com.angelo.yoursmile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "605428971951-1c9svp7bi414nsmcfmra0u613priml3u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.angelo.yoursmile",
+            "certificate_hash": "6192f6d97b1540bb0af214664e7e3c0556e5c0b3"
+          }
+        },
+        {
+          "client_id": "605428971951-9okmlop8heujhjndcrtc0u8av0ic5bu2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE6X9wNYNHRqweQrHgVH8v-o-DpOBDzfM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "605428971951-9okmlop8heujhjndcrtc0u8av0ic5bu2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "605428971951-5c6qt03u2buli4u1jumggqsinn8ptiu4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.angelo.yoursmile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
