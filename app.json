@@ -25,7 +25,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.angelo.yoursmile"
+      "package": "com.angelo.yoursmile",
+      "googleServicesFile":"google-services.json"
     },
     "web": {
       "bundler": "metro",
